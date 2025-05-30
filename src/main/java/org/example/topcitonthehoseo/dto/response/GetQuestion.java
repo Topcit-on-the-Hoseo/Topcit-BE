@@ -1,17 +1,19 @@
 package org.example.topcitonthehoseo.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Setter
 @Getter
 public class GetQuestion {
+
+    private Long questionId;
+
+    private Integer questionNumber;
 
     private boolean questionType;
 

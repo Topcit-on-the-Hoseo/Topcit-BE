@@ -1,5 +1,6 @@
 package org.example.topcitonthehoseo.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.topcitonthehoseo.dto.response.GetQuestion;
@@ -19,13 +20,12 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping("/lecture/{lectureId}")
-    public ResponseEntity<GetQuestion> createQuestion(@PathVariable Integer lectureId) {
+    public ResponseEntity<GetQuestion> createQuestion(@PathVariable Integer lectureId) throws JsonProcessingException {
 
         log.info("Create question");
 
-        //TODO. user id token
-
-        GetQuestion data = questionService.createQuestion(lectureId);
+        Long userId = 1L;
+        GetQuestion data = questionService.createQuestion(lectureId, userId);
 
         return ResponseEntity.ok().body(data);
     }
