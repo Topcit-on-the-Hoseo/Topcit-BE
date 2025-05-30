@@ -141,7 +141,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public GetQuestion getQuestion(Long questionId, Long userId, SaveQuestion saveQuestion) throws JsonProcessingException, ChangeSetPersister.NotFoundException {
+    public GetQuestion getQuestion(Long questionId, Long userId, SaveQuestion saveQuestion) throws JsonProcessingException {
 
         log.debug("getQuestion service in");
 

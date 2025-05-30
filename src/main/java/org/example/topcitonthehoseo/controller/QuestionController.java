@@ -3,7 +3,6 @@ package org.example.topcitonthehoseo.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.example.topcitonthehoseo.dto.request.SaveQuestion;
 import org.example.topcitonthehoseo.dto.response.GetQuestion;
 import org.example.topcitonthehoseo.service.QuestionService;
