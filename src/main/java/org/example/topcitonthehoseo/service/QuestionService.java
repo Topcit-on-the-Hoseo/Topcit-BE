@@ -38,12 +38,10 @@ public class QuestionService {
 
         log.debug("createQuestion service in");
 
-        // lectureId에 맞는 topicId 리스트로 가져오기
         List<Topic> topicList = topicRepository.findByLecture_LectureId(lectureId);
         List<Question> allQuestions = new ArrayList<>();
         List<GetQuestion> returnQuestions = new ArrayList<>();
 
-        // topicId, lectureId에 맞는 문제 가져오기 (topicId 당 2개씩)
         for (Topic topic : topicList) {
             List<Question> questionList = questionRepository.findByTopic_TopicId(topic.getTopicId());
 
@@ -59,7 +57,6 @@ public class QuestionService {
 
         log.debug("topic list 다 돌고 난 후 allQuestions 리스트 개수 출력 : " + allQuestions.size());
 
-        // 객관식인 애들은 Option 가져오기
         for (Question question : allQuestions) {
             if(question.isQuestionType()) {
                 List<Options> options = optionRepository.findByQuestion_QuestionId(question.getQuestionId());
@@ -94,7 +91,6 @@ public class QuestionService {
             }
         }
 
-        // 리스트로 저장 후, 랜덤으로 돌리기
         Collections.shuffle(returnQuestions);
 
         Integer questionNum = 0;
@@ -103,7 +99,6 @@ public class QuestionService {
             getQuestion.setQuestionNumber(questionNum);
         }
 
-        // redis에 저장
         String key = "quiz:" + userId + ":" + lectureId;
         redisTemplate.delete(key);
 
@@ -112,7 +107,6 @@ public class QuestionService {
             redisTemplate.opsForList().rightPush(key, jsonQuiz);
         }
 
-        // 1번 목록만 빼서 GetQuestion Type으로 return
         return returnQuestions.getFirst();
     }
 
@@ -132,7 +126,6 @@ public class QuestionService {
         }
 
         GetQuestion saveAnswer = objectMapper.readValue(getQuestion, GetQuestion.class);
-
         saveAnswer.setUserAnswer(saveQuestion.getUserAnswer());
         String saveAnswerJson = objectMapper.writeValueAsString(saveAnswer);
 
@@ -149,7 +142,6 @@ public class QuestionService {
         String getQuestionKey = "quiz:" + userId + ":" + saveQuestion.getLectureId();
 
         List<String> questionJsonList = redisTemplate.opsForList().range(getQuestionKey, 0, -1);
-
         if (questionJsonList == null || questionJsonList.isEmpty()) {
             throw new IllegalStateException("저장된 문제가 없습니다.");
         }
@@ -172,8 +164,7 @@ public class QuestionService {
         saveQuestion(userId, saveQuestion);
 
         String pattern = "quiz:" + userId + ":" + saveQuestion.getLectureId() + ":*";
-        Set<String> keys = redisTemplate.keys(pattern); // 모든 키 가져오기
-
+        Set<String> keys = redisTemplate.keys(pattern);
         if (keys.isEmpty()) {
             throw new IllegalStateException("채점할 문제가 없습니다.");
         }
@@ -182,13 +173,9 @@ public class QuestionService {
             String[] parts = key.split(":");
             Long questionId = Long.valueOf(parts[3]);
 
-            // REDIS
             String json = redisTemplate.opsForValue().get(key);
-            if (json == null) continue;
-
             GetQuestion getQuestion = objectMapper.readValue(json, GetQuestion.class);
 
-            // MYSQL
             Question question = questionRepository.findById(questionId)
                     .orElseThrow(() -> new NoSuchElementException("해당 문제 없음: " + questionId));
 
@@ -213,7 +200,6 @@ public class QuestionService {
             }
 
             String userAnswer = getQuestion.getUserAnswer();
-
             Boolean isCorrect = correctAnswer.equals(userAnswer);
 
             getQuestion.setCorrectAnswer(correctAnswer);
