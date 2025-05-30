@@ -22,4 +22,10 @@ public class GetQuestion {
     private Map<Integer, String> options;
 
     private double correctRate;
+
+    private String userAnswer;
+
+    private String correctAnswer;
+
+    private Boolean isCorrect;
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface OptionRepository extends JpaRepository<Options, Long> {
 
     List<Options> findByQuestion_QuestionId(Long questionId);
+
+    Options findByQuestion_QuestionIdAndCorrect(Long questionId, boolean correct);
 }
