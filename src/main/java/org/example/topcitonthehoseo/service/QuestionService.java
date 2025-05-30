@@ -12,7 +12,6 @@ import org.example.topcitonthehoseo.entity.Topic;
 import org.example.topcitonthehoseo.repository.OptionRepository;
 import org.example.topcitonthehoseo.repository.QuestionRepository;
 import org.example.topcitonthehoseo.repository.TopicRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -30,7 +30,7 @@ public class QuestionController {
     }
 
     @PostMapping("/{questionId}")
-    public ResponseEntity<GetQuestion> getQuestion(@PathVariable Long questionId, @RequestBody SaveQuestion saveQuestion) throws JsonProcessingException, ChangeSetPersister.NotFoundException {
+    public ResponseEntity<GetQuestion> getQuestion(@PathVariable Long questionId, @RequestBody SaveQuestion saveQuestion) throws JsonProcessingException {
 
         log.info("Get question Controller");
 
