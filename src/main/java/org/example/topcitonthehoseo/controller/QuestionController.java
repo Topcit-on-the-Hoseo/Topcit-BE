@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.topcitonthehoseo.dto.request.SaveQuestion;
 import org.example.topcitonthehoseo.dto.response.GetQuestion;
 import org.example.topcitonthehoseo.service.QuestionService;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
