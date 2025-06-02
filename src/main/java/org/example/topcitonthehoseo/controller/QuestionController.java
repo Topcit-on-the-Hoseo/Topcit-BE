@@ -3,6 +3,7 @@ package org.example.topcitonthehoseo.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.topcitonthehoseo.dto.request.LectureIdRequestDto;
 import org.example.topcitonthehoseo.dto.request.SaveQuestion;
 import org.example.topcitonthehoseo.dto.response.GetQuestion;
 import org.example.topcitonthehoseo.service.QuestionService;
@@ -51,12 +52,12 @@ public class QuestionController {
     }
 
     @PostMapping("/result/{questionNumber}")
-    public ResponseEntity<GetQuestion> getQuestionResult(@PathVariable Integer questionNumber, @RequestBody Long lectureId) throws JsonProcessingException {
+    public ResponseEntity<GetQuestion> getQuestionResult(@PathVariable Integer questionNumber, @RequestBody LectureIdRequestDto lectureIdRequestDto) throws JsonProcessingException {
 
         log.info("Get question result Controller");
 
         Long userId = 1L;
-        GetQuestion data = questionService.getQuestionResult(questionNumber, userId, lectureId);
+        GetQuestion data = questionService.getQuestionResult(questionNumber, userId, lectureIdRequestDto);
 
         return ResponseEntity.ok().body(data);
     }
