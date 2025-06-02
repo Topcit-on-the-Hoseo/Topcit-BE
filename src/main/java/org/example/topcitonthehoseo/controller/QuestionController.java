@@ -28,13 +28,13 @@ public class QuestionController {
         return ResponseEntity.ok().body(data);
     }
 
-    @PostMapping("/{questionId}")
-    public ResponseEntity<GetQuestion> getQuestion(@PathVariable Long questionId, @RequestBody SaveQuestion saveQuestion) throws JsonProcessingException {
+    @PostMapping("/{questionNumber}")
+    public ResponseEntity<GetQuestion> getQuestion(@PathVariable Integer questionNumber, @RequestBody SaveQuestion saveQuestion) throws JsonProcessingException {
 
         log.info("Get question Controller");
 
         Long userId = 1L;
-        GetQuestion data = questionService.getQuestion(questionId, userId, saveQuestion);
+        GetQuestion data = questionService.getQuestion(questionNumber, userId, saveQuestion);
 
         return ResponseEntity.ok().body(data);
     }
@@ -50,13 +50,13 @@ public class QuestionController {
         return ResponseEntity.ok().body("제출 완료");
     }
 
-    @PostMapping("/result/{questionId}")
-    public ResponseEntity<GetQuestion> getQuestionResult(@PathVariable Long questionId) throws JsonProcessingException {
+    @PostMapping("/result/{questionNumber}")
+    public ResponseEntity<GetQuestion> getQuestionResult(@PathVariable Integer questionNumber, @RequestBody Long lectureId) throws JsonProcessingException {
 
         log.info("Get question result Controller");
 
         Long userId = 1L;
-        GetQuestion data = questionService.getQuestionResult(questionId, userId);
+        GetQuestion data = questionService.getQuestionResult(questionNumber, userId, lectureId);
 
         return ResponseEntity.ok().body(data);
     }

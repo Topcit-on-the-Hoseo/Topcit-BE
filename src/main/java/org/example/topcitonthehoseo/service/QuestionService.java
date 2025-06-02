@@ -116,7 +116,7 @@ public class QuestionService {
         log.debug("saveQuestion service in");
 
         Integer lectureId = saveQuestion.getLectureId();
-        String saveAnswerKey = "quiz:" + userId + ":" + lectureId + ":" + saveQuestion.getQuestionId();
+        String saveAnswerKey = "quiz:" + userId + ":" + lectureId + ":" + saveQuestion.getQuestionNumber();
         String getQuestionKey = "quiz:" + userId + ":" + lectureId;
 
         String getQuestion = redisTemplate.opsForList().index(getQuestionKey, saveQuestion.getQuestionNumber());
@@ -133,7 +133,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public GetQuestion getQuestion(Long questionId, Long userId, SaveQuestion saveQuestion) throws JsonProcessingException {
+    public GetQuestion getQuestion(Integer questionNumber, Long userId, SaveQuestion saveQuestion) throws JsonProcessingException {
 
         log.debug("getQuestion service in");
 
@@ -141,19 +141,13 @@ public class QuestionService {
 
         String getQuestionKey = "quiz:" + userId + ":" + saveQuestion.getLectureId();
 
-        List<String> questionJsonList = redisTemplate.opsForList().range(getQuestionKey, 0, -1);
-        if (questionJsonList == null || questionJsonList.isEmpty()) {
+        String getQuestionData = redisTemplate.opsForList().index(getQuestionKey, questionNumber);
+
+        if (Objects.requireNonNull(getQuestionData).isEmpty()) {
             throw new IllegalStateException("저장된 문제가 없습니다.");
         }
 
-        for (String json : questionJsonList) {
-            GetQuestion returnQuestion = objectMapper.readValue(json, GetQuestion.class);
-            if (returnQuestion.getQuestionId().equals(questionId)) {
-                return returnQuestion;
-            }
-        }
-
-        throw new NoSuchElementException("해당 questionId를 가진 문제를 찾을 수 없습니다.");
+        return objectMapper.readValue(getQuestionData, GetQuestion.class);
     }
 
     @Transactional
@@ -165,19 +159,20 @@ public class QuestionService {
 
         String pattern = "quiz:" + userId + ":" + saveQuestion.getLectureId() + ":*";
         Set<String> keys = redisTemplate.keys(pattern);
-        if (keys.isEmpty()) {
+
+        if (Objects.requireNonNull(keys).isEmpty()) {
             throw new IllegalStateException("채점할 문제가 없습니다.");
         }
 
         for (String key : keys) {
-            String[] parts = key.split(":");
-            Long questionId = Long.valueOf(parts[3]);
+//            String[] parts = key.split(":");
+//            Integer questionNumber = Integer.valueOf(parts[3]);
 
             String json = redisTemplate.opsForValue().get(key);
             GetQuestion getQuestion = objectMapper.readValue(json, GetQuestion.class);
 
-            Question question = questionRepository.findById(questionId)
-                    .orElseThrow(() -> new NoSuchElementException("해당 문제 없음: " + questionId));
+            Question question = questionRepository.findById(getQuestion.getQuestionId())
+                    .orElseThrow(() -> new NoSuchElementException("해당 문제 없음: " + getQuestion.getQuestionId()));
 
             String correctAnswer = "";
 
@@ -193,7 +188,6 @@ public class QuestionService {
                         break;
                     }
                 }
-
             }
             else {
                 correctAnswer = question.getQuestionContent();
@@ -202,24 +196,32 @@ public class QuestionService {
             String userAnswer = getQuestion.getUserAnswer();
             Boolean isCorrect = correctAnswer.equals(userAnswer);
 
+            question.setTriedNum(question.getTriedNum() + 1);
+            if(isCorrect) {
+                question.setCorrectedNum(question.getCorrectedNum() + 1);
+            }
+            question.setCorrectRate((double) question.getCorrectedNum() / question.getTriedNum());
+
+            questionRepository.save(question);
+
             getQuestion.setCorrectAnswer(correctAnswer);
             getQuestion.setIsCorrect(isCorrect);
+            getQuestion.setCorrectRate(question.getCorrectRate());
 
             String updatedJson = objectMapper.writeValueAsString(getQuestion);
             redisTemplate.opsForValue().set(key, updatedJson);
-
         }
     }
 
     @Transactional
-    public GetQuestion getQuestionResult(Long questionId, Long userId) throws JsonProcessingException {
+    public GetQuestion getQuestionResult(Integer questionNumber, Long userId, Long lectureId) throws JsonProcessingException {
 
         log.debug("getQuestionResult service in");
 
-        Question question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new RuntimeException("해당 문제를 찾을 수 없습니다."));
+//        Question question = questionRepository.findById(questionId)
+//                .orElseThrow(() -> new RuntimeException("해당 문제를 찾을 수 없습니다."));
 
-        String key = "quiz:" + userId + ":" + question.getLecture().getLectureId() + ":" + questionId;
+        String key = "quiz:" + userId + ":" + lectureId + ":" + questionNumber;
         String resultJson = redisTemplate.opsForValue().get(key);
 
         return objectMapper.readValue(resultJson, GetQuestion.class);
