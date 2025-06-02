@@ -1,4 +1,4 @@
-package org.example.topcitonthehoseo.member.entity;
+package org.example.topcitonthehoseo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

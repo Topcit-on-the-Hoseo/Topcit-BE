@@ -1,4 +1,4 @@
-package org.example.topcitonthehoseo.member.auth.dto;
+package org.example.topcitonthehoseo.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

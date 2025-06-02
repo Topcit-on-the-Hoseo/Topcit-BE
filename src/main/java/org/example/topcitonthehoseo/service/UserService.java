@@ -1,9 +1,9 @@
-package org.example.topcitonthehoseo.member.auth.service;
+package org.example.topcitonthehoseo.service;
 
 import java.util.Optional;
 
-import org.example.topcitonthehoseo.member.entity.User;
-import org.example.topcitonthehoseo.member.repository.UserRepository;
+import org.example.topcitonthehoseo.entity.User;
+import org.example.topcitonthehoseo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;

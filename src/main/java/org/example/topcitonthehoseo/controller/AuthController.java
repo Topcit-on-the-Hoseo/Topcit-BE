@@ -1,12 +1,12 @@
-package org.example.topcitonthehoseo.member.auth.controller;
+package org.example.topcitonthehoseo.controller;
 
-import org.example.topcitonthehoseo.member.auth.dto.GoogleLoginRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.LoginRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.LoginResponseDto;
-import org.example.topcitonthehoseo.member.auth.dto.RefreshTokenRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.RegisterRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.TokenResponseDto;
-import org.example.topcitonthehoseo.member.auth.service.AuthService;
+import org.example.topcitonthehoseo.dto.request.GoogleLoginRequestDto;
+import org.example.topcitonthehoseo.dto.request.LoginRequestDto;
+import org.example.topcitonthehoseo.dto.response.LoginResponseDto;
+import org.example.topcitonthehoseo.dto.request.RefreshTokenRequestDto;
+import org.example.topcitonthehoseo.dto.request.RegisterRequestDto;
+import org.example.topcitonthehoseo.dto.response.TokenResponseDto;
+import org.example.topcitonthehoseo.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
