@@ -1,8 +1,8 @@
-package org.example.topcitonthehoseo.member.repository;
+package org.example.topcitonthehoseo.repository;
 
 import java.util.Optional;
 
-import org.example.topcitonthehoseo.member.entity.User;
+import org.example.topcitonthehoseo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

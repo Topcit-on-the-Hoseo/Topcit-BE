@@ -1,16 +1,16 @@
-package org.example.topcitonthehoseo.member.auth.service;
+package org.example.topcitonthehoseo.service;
 
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
-import org.example.topcitonthehoseo.member.auth.dto.GoogleLoginRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.LoginRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.LoginResponseDto;
-import org.example.topcitonthehoseo.member.auth.dto.RegisterRequestDto;
-import org.example.topcitonthehoseo.member.auth.dto.TokenResponseDto;
-import org.example.topcitonthehoseo.member.auth.util.JwtUtil;
-import org.example.topcitonthehoseo.member.entity.User;
-import org.example.topcitonthehoseo.member.repository.UserRepository;
+import org.example.topcitonthehoseo.dto.request.GoogleLoginRequestDto;
+import org.example.topcitonthehoseo.dto.request.LoginRequestDto;
+import org.example.topcitonthehoseo.dto.response.LoginResponseDto;
+import org.example.topcitonthehoseo.dto.request.RegisterRequestDto;
+import org.example.topcitonthehoseo.dto.response.TokenResponseDto;
+import org.example.topcitonthehoseo.util.JwtUtil;
+import org.example.topcitonthehoseo.entity.User;
+import org.example.topcitonthehoseo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

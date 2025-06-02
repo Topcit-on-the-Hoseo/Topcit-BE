@@ -1,4 +1,4 @@
-package org.example.topcitonthehoseo.member.auth.util;
+package org.example.topcitonthehoseo.util;
 import java.security.Key;
 import java.util.Date;
 

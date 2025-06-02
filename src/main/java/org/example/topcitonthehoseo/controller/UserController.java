@@ -1,9 +1,9 @@
-package org.example.topcitonthehoseo.member.auth.controller;
+package org.example.topcitonthehoseo.controller;
 
 import java.util.Optional;
 
-import org.example.topcitonthehoseo.member.auth.service.UserService;
-import org.example.topcitonthehoseo.member.entity.User;
+import org.example.topcitonthehoseo.service.UserService;
+import org.example.topcitonthehoseo.entity.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
