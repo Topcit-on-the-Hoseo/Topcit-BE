@@ -33,6 +33,7 @@ public class QuestionService {
     private final ObjectMapper objectMapper;
 
     private final StringRedisTemplate redisTemplate;
+    private final RankService rankService;
 
     @Transactional
     public GetQuestion createQuestion(Integer lectureId, Long userId) throws JsonProcessingException {
@@ -108,13 +109,15 @@ public class QuestionService {
             redisTemplate.opsForList().rightPush(key, jsonQuiz);
         }
 
+        log.debug("create question service return {}, {}", returnQuestions.getFirst().getQuestionId(), returnQuestions.getFirst().getQuestionContent());
+
         return returnQuestions.getFirst();
     }
 
     @Transactional
     protected void saveQuestion(Long userId, SaveQuestion saveQuestion) throws JsonProcessingException {
 
-        log.debug("saveQuestion service in");
+        log.debug("saveQuestion service in, {}", saveQuestion.getQuestionNumber());
 
         Integer lectureId = saveQuestion.getLectureId();
         String saveAnswerKey = "quiz:" + userId + ":" + lectureId + ":" + saveQuestion.getQuestionNumber();
@@ -163,6 +166,7 @@ public class QuestionService {
 
         String pattern = "quiz:" + userId + ":" + saveQuestion.getLectureId() + ":*";
         Set<String> keys = redisTemplate.keys(pattern);
+        int totalScore = 0;
 
         if (Objects.requireNonNull(keys).isEmpty()) {
             throw new IllegalStateException("채점할 문제가 없습니다.");
@@ -207,6 +211,7 @@ public class QuestionService {
             question.setTriedNum(question.getTriedNum() + 1);
             if(isCorrect) {
                 question.setCorrectedNum(question.getCorrectedNum() + 1);
+                totalScore ++;
             }
             question.setCorrectRate(((double) question.getCorrectedNum() / question.getTriedNum()) * 100);
 
@@ -215,6 +220,8 @@ public class QuestionService {
             getQuestion.setCorrectAnswer(correctAnswer);
             getQuestion.setIsCorrect(isCorrect);
             getQuestion.setCorrectRate(question.getCorrectRate());
+
+            rankService.saveRanking(userId, saveQuestion.getLectureId(), totalScore);
 
             String updatedJson = objectMapper.writeValueAsString(getQuestion);
             redisTemplate.opsForValue().set(key, updatedJson);
