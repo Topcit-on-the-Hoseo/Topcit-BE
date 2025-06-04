@@ -8,6 +8,8 @@ import org.example.topcitonthehoseo.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,7 +70,7 @@ public class RankService {
     @Transactional
     public void saveRanking(Long userId, Integer lectureId, int score) {
 
-        Date now = new Date();
+        LocalDateTime now = LocalDateTime.now();
         Season season = seasonRepository.findCurrentSeason(now)
                 .orElseThrow(() -> new IllegalStateException("현재 진행 중인 시즌이 없습니다."));
 
@@ -78,24 +80,36 @@ public class RankService {
         Lecture lecture = lectureRepository.findById(Long.valueOf(lectureId))
                 .orElseThrow(() -> new NoSuchElementException("해당 영역이 없습니다."));
 
-        Score scoreData = Score.builder()
-                .user(user)
-                .season(season)
-                .lecture(lecture)
-                .score(score)
-                .build();
+        log.debug("save ranking service in");
+        Optional<Score> existingScore = scoreRepository.findByUserAndSeasonAndLecture(user, season, lecture);
 
-        scoreRepository.save(scoreData);
+        if (existingScore.isPresent()) {
+            log.debug("existing score is " + existingScore.get().getScore());
+            Score scoreEntity = existingScore.get();
+            scoreEntity.setScore(score);
+            scoreRepository.save(scoreEntity);
+        } else {
+            log.debug("new score is " + score);
+            Score newScore = Score.builder()
+                    .user(user)
+                    .season(season)
+                    .lecture(lecture)
+                    .score(score)
+                    .build();
+            scoreRepository.save(newScore);
+        }
 
         List<Score> scoreList = scoreRepository.findByUser_UserIdAndSeason_SeasonId(userId, season.getSeasonId());
 
         Map<Integer, Integer> scoreMap = scoreList.stream()
                 .collect(Collectors.toMap(
                         s -> s.getLecture().getLectureId(),
-                        Score::getScore
+                        Score::getScore,
+                        (oldVal, newVal) -> newVal
                 ));
 
         boolean hasZero = scoreMap.values().stream().anyMatch(lectureScore -> lectureScore == 0);
+        log.debug("hasZero is " + hasZero);
 
         String rankName;
 
@@ -119,6 +133,7 @@ public class RankService {
             throw new RuntimeException("잘못된 점수 값입니다.");
         }
 
+        log.debug("ranking " + rankName);
         Ranking ranking = rankRepository.findByRankName(rankName)
                 .orElseThrow(() -> new NoSuchElementException("해당 이름을 가진 랭크가 없습니다."));
 

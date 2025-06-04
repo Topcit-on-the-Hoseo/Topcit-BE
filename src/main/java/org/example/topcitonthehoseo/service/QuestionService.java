@@ -221,10 +221,11 @@ public class QuestionService {
             getQuestion.setIsCorrect(isCorrect);
             getQuestion.setCorrectRate(question.getCorrectRate());
 
+            log.debug("ranking 하기 전");
             rankService.saveRanking(userId, saveQuestion.getLectureId(), totalScore);
 
             String updatedJson = objectMapper.writeValueAsString(getQuestion);
-            redisTemplate.opsForValue().set(key, updatedJson);
+            redisTemplate.opsForList().rightPush(key, updatedJson);
         }
     }
 
@@ -237,7 +238,7 @@ public class QuestionService {
 //                .orElseThrow(() -> new RuntimeException("해당 문제를 찾을 수 없습니다."));
 
         String key = "quiz:" + userId + ":" + lectureIdRequestDto.getLectureId() + ":" + questionNumber;
-        String resultJson = redisTemplate.opsForValue().get(key);
+        String resultJson = redisTemplate.opsForList().getLast(key);
 
         return objectMapper.readValue(resultJson, GetQuestion.class);
     }

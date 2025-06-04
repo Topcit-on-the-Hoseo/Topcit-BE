@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 
@@ -13,5 +14,5 @@ import java.util.Optional;
 public interface SeasonRepository extends JpaRepository<Season, Long> {
 
     @Query("SELECT s FROM Season s WHERE :now BETWEEN s.seasonStart AND s.seasonEnd")
-    Optional<Season> findCurrentSeason(@Param("now") Date now);
+    Optional<Season> findCurrentSeason(@Param("now") LocalDateTime now);
 }
