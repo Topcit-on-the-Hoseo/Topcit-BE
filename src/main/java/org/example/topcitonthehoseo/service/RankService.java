@@ -1,6 +1,5 @@
 package org.example.topcitonthehoseo.service;
 
-import com.google.api.client.util.DateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.topcitonthehoseo.dto.response.GetRankListResponseDto;
@@ -98,7 +97,7 @@ public class RankService {
 
         boolean hasZero = scoreMap.values().stream().anyMatch(lectureScore -> lectureScore == 0);
 
-        String rankName = "";
+        String rankName;
 
         int totalScore = scoreMap.values().stream()
                 .mapToInt(Integer::intValue)

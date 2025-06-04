@@ -1,6 +1,5 @@
 package org.example.topcitonthehoseo.entity;
 
-import com.google.api.client.util.DateTime;
 import jakarta.persistence.*;
 import lombok.*;
 
