@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GetRankListResponseDto {
 
-    private int ranking;
-
     private String nickname;
 
     private String rankImage;

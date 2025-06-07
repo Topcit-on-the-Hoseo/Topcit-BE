@@ -1,16 +1,27 @@
 package org.example.topcitonthehoseo.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.topcitonthehoseo.dto.response.GetRankListResponseDto;
-import org.example.topcitonthehoseo.entity.*;
-import org.example.topcitonthehoseo.repository.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.example.topcitonthehoseo.dto.response.GetRankListResponseDto;
+import org.example.topcitonthehoseo.entity.Lecture;
+import org.example.topcitonthehoseo.entity.Ranking;
+import org.example.topcitonthehoseo.entity.Score;
+import org.example.topcitonthehoseo.entity.Season;
+import org.example.topcitonthehoseo.entity.User;
+import org.example.topcitonthehoseo.entity.UserRank;
+import org.example.topcitonthehoseo.repository.LectureRepository;
+import org.example.topcitonthehoseo.repository.RankRepository;
+import org.example.topcitonthehoseo.repository.ScoreRepository;
+import org.example.topcitonthehoseo.repository.SeasonRepository;
+import org.example.topcitonthehoseo.repository.UserRankRepository;
+import org.example.topcitonthehoseo.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -24,19 +35,21 @@ public class RankService {
     private final ScoreRepository scoreRepository;
 
     private final SeasonRepository seasonRepository;
+
     private final LectureRepository lectureRepository;
+
     private final RankRepository rankRepository;
 
     @Transactional
-    public List<GetRankListResponseDto> getRankList(int seasonId, Long userId) {
-
-        log.debug("get rank list service in");
+    public List<GetRankListResponseDto> getRankList(int seasonId) {
 
         List<UserRank> userRanks = userRankRepository.findBySeason_SeasonId(seasonId);
         List<GetRankListResponseDto> rankList = new ArrayList<>();
 
         for (UserRank userRank : userRanks) {
-            List<Score> scoreList = scoreRepository.findByUser_UserIdAndSeason_SeasonId(userId, seasonId);
+            Long targetUserId = userRank.getUser().getUserId();
+
+            List<Score> scoreList = scoreRepository.findByUser_UserIdAndSeason_SeasonId(targetUserId, seasonId);
 
             Map<Integer, Integer> scoreMap = scoreList.stream()
                     .collect(Collectors.toMap(
@@ -48,7 +61,7 @@ public class RankService {
                     .mapToInt(Integer::intValue)
                     .sum();
 
-            GetRankListResponseDto getRankListResponseDto = GetRankListResponseDto.builder()
+            GetRankListResponseDto dto = GetRankListResponseDto.builder()
                     .nickname(userRank.getUser().getNickname())
                     .rankImage(userRank.getRanking().getRankImage())
                     .lecture1Score(scoreMap.getOrDefault(1, 0))
@@ -60,8 +73,10 @@ public class RankService {
                     .totalScore(totalScore)
                     .build();
 
-            rankList.add(getRankListResponseDto);
+            rankList.add(dto);
         }
+
+        rankList.sort(Comparator.comparing(GetRankListResponseDto::getTotalScore).reversed());
 
         return rankList;
     }
